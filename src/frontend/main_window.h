@@ -4,12 +4,15 @@
 #include <gtkmm.h>
 #include <gtksourceviewmm.h>
 
+#include "frontend/navi_bar.h"
+
 class MainWindow {
 private:
     Gtk::Window* window_;
     Gsv::View* source_view_; 
     
     Gtk::VBox main_layout_;
+    Gtk::VBox source_pane_;
     
     Gtk::Toolbar toolbar_;
 
@@ -19,9 +22,7 @@ private:
     
     void create_toolbar();
     
-    Gtk::MenuBar nav_bar_;
-    Gtk::MenuItem nav_bar_directory_;
-    Gtk::Menu nav_bar_browse_menu_;
+    NaviBar nav_bar_;
     
     void populate_navbar(const std::string& path);
 public:
