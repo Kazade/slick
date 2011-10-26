@@ -21,7 +21,7 @@ MainWindow::MainWindow():
     window_->set_size_request(800, 600);
     
     create_toolbar();
-    populate_navbar(os::path::expand_user("~"));
+    //populate_navbar(os::path::expand_user("~"));
     
 /*    nav_bar_.append(nav_bar_directory_);
     nav_bar_directory_.set_submenu(nav_bar_browse_menu_);*/

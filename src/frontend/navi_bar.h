@@ -2,6 +2,7 @@
 #define NAVI_BAR_H
 
 #include <gtkmm.h>
+#include "frontend/directory_menu.h"
 
 /*
     NaviBar my_bar;
@@ -34,8 +35,7 @@ private:
     std::map<std::string, Gtk::MenuItem*> browser_entries_by_path_;
     std::map<std::string, Gtk::MenuItem*> opened_files_by_path_;
 
-    Gtk::MenuItem directories_;
-    Gtk::Menu directories_menu_;
+    DirectoryMenu* directory_menu_;
     
     Gtk::MenuItem opened_files_;
     Gtk::Menu opened_files_menu_;

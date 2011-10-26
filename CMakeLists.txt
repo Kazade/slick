@@ -34,6 +34,7 @@ SET(KAZBASE_SOURCES
 SET(FRONTEND_SOURCES
     ./src/frontend/main_window.cpp
     ./src/frontend/navi_bar.cpp
+    ./src/frontend/directory_menu.cpp
 )
 
 SET(BACKEND_SOURCES

@@ -2,12 +2,18 @@
 #define DIRECTORY_MENU_H
 
 #include <gtkmm.h>
+#include <string>
 
-class DirectoryMenu : Gtk::MenuItem {
+class DirectoryMenu : public Gtk::MenuItem {
 public:
-    DirectoryMenu(const std::string& path);
+    DirectoryMenu(const std::string& path, bool is_root=true);
 
-    void build();
+    bool build(Cairo::RefPtr<Cairo::Context> context);
+    
+private:
+    std::string path_;
+    bool built_;
+    bool is_root_;
 };
 
 #endif

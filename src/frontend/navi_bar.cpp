@@ -5,7 +5,8 @@
 #include "backend/tree_walker.h"
 #include "kazbase/list_utils.h"
 
-NaviBar::NaviBar() {
+NaviBar::NaviBar():
+    directory_menu_(nullptr) {
     set_browser_root(os::path::expand_user("~"));
 }
 
@@ -27,28 +28,15 @@ void NaviBar::add_opened_file(const std::string& path) {
 }
 
 void NaviBar::refresh_browser() {
-    TreeWalker walker(browser_root_);
+    if(directory_menu_) {
+        L_DEBUG("Removing and recreating the directory menu");
+        remove(*directory_menu_);
+        directory_menu_ = nullptr;
+    }
+
+    L_DEBUG("Creating a directory menu");
+    directory_menu_ = Gtk::manage(new DirectoryMenu(browser_root_));
     
-    for(TreeWalker::Level l: walker.walk()) {
-        if(!container::contains(browser_entries_by_path_, l.root)) {
-            //Create a directory entry for the root if it doesn't exist
-            browser_entries_by_path_[l.root] = new Gtk::MenuItem(os::path::split(l.root).second);            
-            Gtk::Menu* mnu = Gtk::manage(new Gtk::Menu());
-            browser_entries_by_path_[l.root]->set_submenu(*mnu);
-        }
-        
-        for(std::string d: l.dirs) {
-            //For each directory, create a Gtk::MenuItem and a submenu
-            std::string path = os::path::join(l.root, d);
-            browser_entries_by_path_[path] = new Gtk::MenuItem(d);            
-            browser_entries_by_path_[l.root]->get_submenu()->append(*browser_entries_by_path_[path]);
-        }
-        
-        for(std::string f: l.files) {
-            //Create a Gtk::MenuItem and attach it to the parent
-        }
-        break;
-    } 
-    
-    append(*browser_entries_by_path_[browser_root_]);
+    L_DEBUG("Adding to the menu bar");
+    append(*directory_menu_);
 }
