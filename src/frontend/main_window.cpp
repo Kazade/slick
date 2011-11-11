@@ -9,6 +9,15 @@ MainWindow::MainWindow():
 
     window_ = new Gtk::Window();
     source_view_ = Gtk::manage(new Gsv::View());
+    
+    source_view_->set_show_line_numbers(true);
+    source_view_->set_tab_width(4);
+    source_view_->set_auto_indent(true);
+    source_view_->set_insert_spaces_instead_of_tabs(true);
+    source_view_->set_highlight_current_line(true);
+//    source_view_->set_draw_spaces(true);
+    
+    source_view_->override_font(Pango::FontDescription("monospace"));
 
     main_viewport_.add(*source_view_);
 

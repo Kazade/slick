@@ -18,7 +18,7 @@ public:
     BufferID open_file(const std::string& filename);
     void save_buffer(BufferID buffer, const std::string& filename=std::string());
     void set_active_buffer(BufferID buffer);
-
+    Glib::RefPtr<Gsv::Language> detect_language(const std::string& filename);
 private:
     static BufferID counter_;
 

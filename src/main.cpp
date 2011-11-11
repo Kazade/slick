@@ -1,4 +1,5 @@
 #include <gtkmm.h>
+#include <gtksourceviewmm.h>
 
 #include "kazbase/os/path.h"
 #include "kazbase/logging/logging.h"
@@ -14,6 +15,7 @@ int main(int argc, char* argv[]) {
     logging::get_logger("/")->add_handler(logging::Handler::ptr(new logging::StdIOHandler));
     logging::get_logger("/")->add_handler(logging::Handler::ptr(new logging::FileHandler(log)));
     
+    Gsv::init();
     Gtk::Main kit(argc, argv);
     
     MainWindow window;

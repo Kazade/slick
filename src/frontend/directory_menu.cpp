@@ -3,6 +3,7 @@
 #include "kazbase/logging/logging.h"
 #include "kazbase/os/path.h"
 #include "kazbase/string.h"
+#include "kazbase/list_utils.h"
 
 #include <glib/gi18n.h>
 
@@ -53,13 +54,27 @@ bool DirectoryMenu::build(Cairo::RefPtr<Cairo::Context> context) {
 
     //Now go through the files in the directory, and add them as
     //menu items
+    std::vector<std::string> suitable_files;
+    
+    //Defend against (some, but not all) craziness - need to find a better way to ignore binary files
+    std::vector<std::string> blacklist = { ".png", ".pyc", ".jpg", ".jpeg", ".exe", ".zip", ".gz", ".mp3", ".flac", ".deb", ".pdf" };
+    
     for(std::string f: os::path::list_dir(path_)) {
         std::string path = os::path::join(path_, f);
 
         if(!os::path::is_file(path)) continue;
         if(str::starts_with(f, ".")) continue;
         if(str::ends_with(f, "~")) continue;
+        if(container::contains(blacklist, os::path::split_ext(f).second)) continue;
 
+        suitable_files.push_back(f);
+    }
+    
+    std::sort(suitable_files.begin(), suitable_files.end());
+    
+    for(std::string f: suitable_files) {
+        std::string path = os::path::join(path_, f);
+        
         Gtk::MenuItem* new_item = Gtk::manage(new Gtk::MenuItem(f));
         new_item->signal_activate().connect(sigc::bind(sigc::mem_fun(this, &DirectoryMenu::on_file_item_clicked), path));
         get_submenu()->append(*new_item);

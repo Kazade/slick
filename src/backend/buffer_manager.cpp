@@ -3,6 +3,7 @@
 #include "buffer_manager.h"
 #include "kazbase/file_utils.h"
 #include "kazbase/list_utils.h"
+#include "kazbase/string.h"
 
 BufferID BufferManager::counter_ = 0;
 
@@ -25,6 +26,7 @@ BufferID BufferManager::open_file(const std::string& filename) {
     BufferID new_buffer_id = counter_++;
     BufferPtr new_buffer = Gsv::Buffer::create();
     new_buffer->set_text(file_utils::read_contents(filename));
+    new_buffer->set_language(detect_language(filename));
     buffers_[new_buffer_id] = new_buffer;
 
     return new_buffer_id;
@@ -53,4 +55,18 @@ BufferID BufferManager::get_buffer_id_from_filename(const std::string& filename)
 BufferPtr BufferManager::get_buffer_by_id(BufferID buffer_id) {
     assert(container::contains(buffers_, buffer_id));
     return buffers_[buffer_id];
+}
+
+Glib::RefPtr<Gsv::Language> BufferManager::detect_language(const std::string& filename) {
+    //TODO: use mimetypes and finish this
+    std::string language;
+    if(str::ends_with(filename, ".py")) {
+        language = "python";
+    }
+    
+    if(!language.empty()) {
+        return Gsv::LanguageManager::get_default()->get_language(language);
+    }
+    
+    return Glib::RefPtr<Gsv::Language>();
 }
