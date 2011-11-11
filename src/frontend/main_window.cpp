@@ -9,23 +9,29 @@ MainWindow::MainWindow():
 
     window_ = new Gtk::Window();
     source_view_ = Gtk::manage(new Gsv::View());
-    
+
+    main_viewport_.add(*source_view_);
+
     source_pane_.pack_start(nav_bar_, false, false);
-    source_pane_.pack_start(*source_view_);
-    
+    source_pane_.pack_start(main_viewport_);
+
     main_layout_.pack_start(toolbar_, false, false);
     main_layout_.pack_start(source_pane_);
     window_->add(main_layout_);
-        
+
     window_->signal_delete_event().connect(sigc::mem_fun(this, &MainWindow::on_delete_event));
     window_->set_size_request(800, 600);
-    
+
     create_toolbar();
+
+    buffer_manager_.reset(new BufferManager(*source_view_));
+
     //populate_navbar(os::path::expand_user("~"));
-    
+
 /*    nav_bar_.append(nav_bar_directory_);
     nav_bar_directory_.set_submenu(nav_bar_browse_menu_);*/
-    
+    nav_bar_.get_directory_menu().signal_file_clicked().connect(sigc::mem_fun(this, &MainWindow::open_file));
+
     window_->show_all();
 }
 
@@ -46,7 +52,7 @@ void MainWindow::create_toolbar() {
     new_.set_stock_id(Gtk::Stock::NEW);
     open_.set_stock_id(Gtk::Stock::OPEN);
     save_.set_stock_id(Gtk::Stock::SAVE);
-    
+
     toolbar_.append(new_);
     toolbar_.append(open_);
     toolbar_.append(save_);
@@ -55,17 +61,17 @@ void MainWindow::create_toolbar() {
 /*
     TODO:
         Create a subclass of Gtk::MenuItem which is a lazy-submenu-populator, something like
-        
+
         menu.append(LazyDirItem(path));
-        
+
         which, on-draw adds a task to idle() that generates the submenu which may in turn
         add more LazyDirItems. This means the menu only loads the directories below the current level
         not all of them!
 */
-        
+
 void MainWindow::populate_navbar(const std::string& path) {
 /*
-    [Home] 
+    [Home]
     Change directory...
     ----------------
     Documents >
@@ -74,18 +80,11 @@ void MainWindow::populate_navbar(const std::string& path) {
                PotatoCI >
 */
     nav_bar_.set_browser_root(path);
-    
-/*
-    TreeWalker walker(path);
-    
-    std::vector<TreeWalker::Level> tree;// = walker.walk();
-    
-    for(TreeWalker::Level l: tree) {
-        for(std::string f: l.files) {
-            Gtk::MenuItem* item = Gtk::manage(new Gtk::MenuItem(f));
-            nav_bar_browse_menu_.append(*item);
-        }
-    }
-    nav_bar_browse_menu_.show_all();
-    nav_bar_directory_.set_label(path);*/
+
+}
+
+void MainWindow::open_file(const std::string& filename) {
+    L_DEBUG("Opening file: " + filename);
+    BufferID buffer = buffer_manager_->open_file(filename);
+    buffer_manager_->set_active_buffer(buffer);
 }

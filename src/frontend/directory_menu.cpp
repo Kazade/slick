@@ -11,20 +11,20 @@ DirectoryMenu::DirectoryMenu(const std::string& path, bool is_root):
     path_(path),
     built_(false),
     is_root_(is_root) {
-    
+
     L_DEBUG("DirectoryMenu::DirectoryMenu() called with path: " + path);
-    
+
     set_submenu(*Gtk::manage(new Gtk::Menu()));
-    
+
     //Build on the first draw
     signal_draw().connect(sigc::mem_fun(*this, &DirectoryMenu::build));
 }
 
 bool DirectoryMenu::build(Cairo::RefPtr<Cairo::Context> context) {
     if(built_) return false;
-    
+
     L_DEBUG("Building directory menu");
-   
+
     if(is_root_) {
         //If this is the root of the tree, add the change directory entry
         //first
@@ -32,36 +32,38 @@ bool DirectoryMenu::build(Cairo::RefPtr<Cairo::Context> context) {
         get_submenu()->append(*cd);
         get_submenu()->append(*Gtk::manage(new Gtk::SeparatorMenuItem()));
     }
-        
+
     bool item_added = false;
-    
+
     //Go through the current directory recursively add sub menus
     std::vector<std::string> dirs = os::path::list_dir(path_);
     std::sort(dirs.begin(), dirs.end());
     for(std::string d: dirs) {
         std::string path = os::path::join(path_, d);
 
-        if(!os::path::is_dir(path)) continue;        
+        if(!os::path::is_dir(path)) continue;
         if(str::starts_with(d, ".")) continue;
-        
+
         DirectoryMenu* new_menu = Gtk::manage(new DirectoryMenu(path, false));
+        new_menu->signal_file_clicked().connect(sigc::mem_fun(this, &DirectoryMenu::on_file_item_clicked));
         get_submenu()->append(*new_menu);
-        
+
         item_added = true;
     }
-    
+
     //Now go through the files in the directory, and add them as
-    //menu items    
+    //menu items
     for(std::string f: os::path::list_dir(path_)) {
         std::string path = os::path::join(path_, f);
 
-        if(!os::path::is_file(path)) continue;        
+        if(!os::path::is_file(path)) continue;
         if(str::starts_with(f, ".")) continue;
         if(str::ends_with(f, "~")) continue;
-            
+
         Gtk::MenuItem* new_item = Gtk::manage(new Gtk::MenuItem(f));
+        new_item->signal_activate().connect(sigc::bind(sigc::mem_fun(this, &DirectoryMenu::on_file_item_clicked), path));
         get_submenu()->append(*new_item);
-        
+
         item_added = true;
     }
 
@@ -70,11 +72,11 @@ bool DirectoryMenu::build(Cairo::RefPtr<Cairo::Context> context) {
         empty_item->set_sensitive(false);
         get_submenu()->append(*empty_item);
     }
- 
+
     L_DEBUG("Build complete");
     get_submenu()->show_all();
-       
-    built_ = true;    
+
+    built_ = true;
     return false;
 }
 
