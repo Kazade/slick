@@ -29,6 +29,7 @@ SET(KAZBASE_SOURCES
     ./src/kazbase/requests/requests.cpp
     ./src/kazbase/network/net.cpp    
     ./src/kazbase/colour/colour.cpp
+    ./src/kazbase/file_utils.cpp
 )
 
 SET(FRONTEND_SOURCES
@@ -39,6 +40,7 @@ SET(FRONTEND_SOURCES
 
 SET(BACKEND_SOURCES
     ./src/backend/tree_walker.cpp
+    ./src/backend/buffer_manager.cpp
 )
 
 LINK_DIRECTORIES(
