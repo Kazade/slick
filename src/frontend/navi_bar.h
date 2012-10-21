@@ -31,6 +31,9 @@ public:
 
     DirectoryMenu& get_directory_menu() { return *directory_menu_; }
 
+    void on_change_directory_clicked();
+    void on_directory_selected(Gtk::FileChooserDialog* dlg, int response);
+
 private:
     std::string browser_root_;
 

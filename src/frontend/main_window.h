@@ -37,6 +37,7 @@ public:
     bool on_delete_event(GdkEventAny* event);
 
     void open_file(const std::string& filename);
+
 };
 
 #endif

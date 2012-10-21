@@ -30,6 +30,7 @@ bool DirectoryMenu::build(Cairo::RefPtr<Cairo::Context> context) {
         //If this is the root of the tree, add the change directory entry
         //first
         Gtk::MenuItem* cd = Gtk::manage(new Gtk::MenuItem(_("Change directory...")));
+        cd->signal_activate().connect(sigc::mem_fun(this, &DirectoryMenu::on_change_directory_clicked));
         get_submenu()->append(*cd);
         get_submenu()->append(*Gtk::manage(new Gtk::SeparatorMenuItem()));
     }
